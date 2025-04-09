@@ -247,6 +247,16 @@ class ConnectApp extends Component<Props, State> {
 		});
 	};
 
+	validateUrl = e => {
+		const { value, name } = e.target;
+
+		if (value && value.trim() && !value.startsWith('http') && !value.startsWith('https')) {
+			this.setState({
+				[name]: `http://${value}`,
+			});
+		}
+	}
+
 	handleAppNameChange = appname => {
 		const { pastApps } = this.state;
 		const pastApp = pastApps.find(app => app.appname === appname);
@@ -478,6 +488,7 @@ class ConnectApp extends Component<Props, State> {
 										value={url}
 										placeholder="URL for cluster goes here. e.g.  https://username:password@my-search-cluster.com"
 										onChange={this.handleChange}
+										onBlur={this.validateUrl}
 										disabled={isConnected}
 										required
 										visibilityToggle={{
