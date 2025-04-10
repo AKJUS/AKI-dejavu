@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Form, Button, Alert, AutoComplete, Input, Modal } from 'antd';
+import { Form, Button, Alert, AutoComplete, Input, Modal, Tooltip } from 'antd';
 import {
 	CloseOutlined,
 	PauseCircleOutlined,
@@ -73,6 +73,7 @@ type State = {
 	isUrlHidden: boolean,
 	isShowingHeadersModal: boolean,
 	customHeaders: any[],
+	missingAppName: boolean,
 };
 
 const { Item } = Form;
@@ -120,6 +121,7 @@ class ConnectApp extends Component<Props, State> {
 		customHeaders: this.props.headers.length
 			? this.props.headers
 			: [{ key: '', value: '' }],
+		missingAppName: false,
 	};
 
 	componentDidMount() {
@@ -248,6 +250,7 @@ class ConnectApp extends Component<Props, State> {
 	};
 
 	handleAppNameChange = appname => {
+		this.setState({ missingAppName: false });
 		const { pastApps } = this.state;
 		const pastApp = pastApps.find(app => app.appname === appname);
 
@@ -264,6 +267,13 @@ class ConnectApp extends Component<Props, State> {
 
 	handleSubmit = () => {
 		const { appname, url, customHeaders } = this.state;
+
+		const missingAppName = !appname.trim();
+
+		this.setState({ missingAppName });
+
+		if (missingAppName) return;
+
 		const { sidebar, appswitcher, footer, route } = getUrlParams(
 			window.location.search,
 		);
@@ -452,6 +462,7 @@ class ConnectApp extends Component<Props, State> {
 			isUrlHidden,
 			isShowingHeadersModal,
 			customHeaders,
+			missingAppName,
 		} = this.state;
 		const { isLoading, isConnected } = this.props;
 		const showHeaders =
@@ -508,6 +519,11 @@ class ConnectApp extends Component<Props, State> {
 								</Group>
 							</Item>
 							<Item>
+								<Tooltip
+									placement="topLeft"
+									title="Please fill out this field"
+									open={missingAppName}
+								/>
 								<AutoComplete
 									options={pastApps.map(app => ({
 										value: app.appname,
@@ -524,6 +540,7 @@ class ConnectApp extends Component<Props, State> {
 									spellcheck="false"
 									autocorrect="off"
 									autocapitalize="off"
+									status={missingAppName ? "error" : ""}
 								/>
 							</Item>
 
@@ -540,7 +557,6 @@ class ConnectApp extends Component<Props, State> {
 											<PlayCircleOutlined />
 										)
 									}
-									disabled={!(appname && url)}
 									loading={isLoading}
 								>
 									{isConnected ? 'Disconnect' : 'Connect'}
