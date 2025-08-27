@@ -47,12 +47,12 @@
 		"style-loader": "^0.23.0"
 	},
 	"engines": {
-		"node": ">=14.17.1 <21"
+		"node": ">=14.17.1"
 	},
 	"license": "MIT",
 	"scripts": {
 		"dev:browser": "lerna run watch --scope @appbaseio/dejavu-browser --stream",
-		"start": "lerna run watch --scope dejavu-main --stream",
+		"start": "NODE_OPTIONS=--openssl-legacy-provider lerna run watch --scope dejavu-main --stream",
 		"dev:dejavu": "NODE_OPTIONS=--openssl-legacy-provider lerna run watch --scope dejavu-main --stream",
 		"dev:dejavu:site": "NODE_OPTIONS=--openssl-legacy-provider lerna run watch:site --scope dejavu-main --stream",
 		"build:browser": "NODE_OPTIONS=--openssl-legacy-provider lerna run build --scope @appbaseio/dejavu-browser --stream",
@@ -72,5 +72,6 @@
 		"packages": [
 			"packages/*"
 		]
-	}
+	},
+	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
