@@ -29,6 +29,24 @@ export default async (rawUrl, indexName) => {
 
 		version = res.version && res.version.number;
 
+		// Normalize for OpenSearch: treat as ES7+/8+ for feature flags
+		if (
+			(res.version &&
+				(res.version.distribution === 'opensearch' ||
+					(res.version.build_flavor &&
+						res.version.build_flavor
+							.toLowerCase()
+							.includes('opensearch')))) ||
+			(res.tagline && res.tagline.toLowerCase().includes('opensearch'))
+		) {
+			// Only normalize for OpenSearch >= 3.0
+			const osVersionStr = (res.version && res.version.number) || '0.0.0';
+			const osMajor = parseInt(osVersionStr.split('.')[0], 10) || 0;
+			if (osMajor >= 3) {
+				version = '8.0.0';
+			}
+		}
+
 		if (!version) {
 			// If version is not obtained, use fallback logic
 			throw new Error('Version not found in root endpoint response');

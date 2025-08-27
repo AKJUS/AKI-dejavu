@@ -48,7 +48,18 @@ export function* handleFetchMappings() {
 			const typePropertyMapping = {};
 
 			indexes.forEach(index => {
-				if (versionCode >= 7) {
+				// Normalize typeless mappings (OpenSearch and ES7+)
+				// If mappings is of the form { properties: { ... } }, wrap under a synthetic _doc
+				if (
+					data[index] &&
+					data[index].mappings &&
+					data[index].mappings.properties
+				) {
+					data[index].mappings = {
+						_doc: { properties: data[index].mappings.properties },
+					};
+				} else if (versionCode >= 7) {
+					// ES7 typed structure: bring everything under _doc for consistency
 					data[index].mappings = {
 						_doc: { ...data[index].mappings },
 					};

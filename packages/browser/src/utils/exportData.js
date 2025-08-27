@@ -55,7 +55,7 @@ export const searchAfter = async (
 
 		if (version === 5) {
 			sort = [{ _uid: 'desc' }]; // For version 5, use _uid with desc
-		} else if (version === 8) {
+		} else if (version === 8 || version === 9) {
 			sort = ['_doc']; // For version 8, use _doc without desc
 		} else {
 			// For OpenSearch 1.x, 2.x, ES 6.x, 7.x

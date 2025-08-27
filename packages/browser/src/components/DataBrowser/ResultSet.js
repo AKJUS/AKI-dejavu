@@ -143,8 +143,8 @@ class ResultSet extends React.Component<Props, State> {
 			sort: defaultSort,
 		};
 
-		// ES 5.x and 6.x don't support track total hits, all other versions including OpenSearch support it
-		if (version !== 5 || version !== 6) {
+		// ES 5.x and 6.x don't support track total hits; others (incl. OpenSearch) do
+		if (version !== 5 && version !== 6) {
 			// $FlowFixMe
 			defaultQuery.track_total_hits = true;
 		}

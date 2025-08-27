@@ -3,7 +3,6 @@
 import React, { Component } from 'react';
 import { DataSearch } from '@appbaseio/reactivesearch';
 import { css } from 'react-emotion';
-import { SearchOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 
 import {
