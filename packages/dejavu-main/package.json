@@ -1,7 +1,7 @@
 {
 	"name": "dejavu-main",
 	"description": "Dejavu main module",
-	"version": "3.9.0",
+	"version": "3.10.0",
 	"authors": [
 		"ReactiveSearch.io <info@reactivesearch.io> (https://github.com/appbaseio)"
 	],

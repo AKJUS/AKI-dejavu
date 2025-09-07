@@ -50,7 +50,8 @@ if (!isDevelopment) {
 	);
 	plugins.push(
 		new CompressionPlugin({
-			filename: '[path].gz[query]',
+			// ensure unique output names per asset to avoid conflicts
+			filename: '[path][base].gz',
 			algorithm: 'gzip',
 			test: /\.js$|\.css$|\.html$/,
 			threshold: 10240,
@@ -59,7 +60,8 @@ if (!isDevelopment) {
 	);
 	plugins.push(
 		new CompressionPlugin({
-			filename: '[path].br[query]',
+			// ensure unique output names per asset to avoid conflicts
+			filename: '[path][base].br',
 			algorithm: 'brotliCompress',
 			test: /\.(js|css|html|svg)$/,
 			compressionOptions: {

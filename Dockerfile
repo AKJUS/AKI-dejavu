@@ -12,7 +12,7 @@ RUN apk --no-cache update \
 ADD . /dejavu
 
 RUN yarn \
-    && yarn cache clean && yarn build:dejavu:app \
+    && yarn cache clean && DISABLE_FAVICONS=1 yarn build:dejavu:app \
     && rm -rf /dejavu/node_modules \
     && rm -rf /tmp/*
 
