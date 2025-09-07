@@ -1,36 +1,45 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const WriteWebPackPlugin = require('write-file-webpack-plugin');
-const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 const { NODE_ENV } = process.env;
 
 const isDevelopment = NODE_ENV === 'development';
 
-const plugins = [
-	// Ignore all locale files of moment.js
-	new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-	new CleanWebpackPlugin([path.resolve(__dirname, 'dist/app')]),
-	new HtmlWebpackPlugin({
-		template: './app/index.html',
-		alwaysWriteToDisk: true,
-	}),
-	new FaviconsWebpackPlugin({
-		logo: './app/src/favicon/favicon.png',
-		prefix: 'favicon/',
-	}),
-	new HtmlWebpackHarddiskPlugin(),
-	new CopyWebpackPlugin(['./app/src/_redirects', 'chrome-specific']),
-	new WriteWebPackPlugin(),
-];
+const plugins = (() => {
+	const list = [
+		// Ignore all locale files of moment.js (Webpack 5 options signature)
+		new webpack.IgnorePlugin({
+			resourceRegExp: /^\.\/locale$/,
+			contextRegExp: /moment$/,
+		}),
+		new HtmlWebpackPlugin({
+			template: './app/index.html',
+		}),
+		new CopyWebpackPlugin({
+			patterns: [
+				{ from: './app/src/_redirects', to: '.' },
+				{ from: 'chrome-specific', to: 'chrome-specific' },
+				{ from: './app/src/samples', to: 'samples' },
+			],
+		}),
+	];
+	// Allow disabling favicons generation in environments where sharp/libvips is problematic
+	if (process.env.DISABLE_FAVICONS !== '1') {
+		list.push(
+			new FaviconsWebpackPlugin({
+				logo: './app/src/favicon/favicon.png',
+				prefix: 'favicon/',
+			}),
+		);
+	}
+	return list;
+})();
 
 if (!isDevelopment) {
 	plugins.push(
@@ -67,19 +76,17 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, 'dist/app'),
 		publicPath: '/',
+		clean: true,
 		filename: isDevelopment ? '[name].js' : '[name].[contenthash:8].js',
 		chunkFilename: isDevelopment
 			? '[name].bundle.js'
 			: '[name].[contenthash:8].js',
 	},
 	optimization: {
-		moduleIds: 'hashed',
-		runtimeChunk: {
-			name: 'manifest',
-		},
-		minimizer: isDevelopment
-			? []
-			: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+		moduleIds: 'deterministic',
+		runtimeChunk: 'single',
+		minimize: !isDevelopment,
+		minimizer: ['...', new CssMinimizerPlugin()],
 		splitChunks: {
 			cacheGroups: {
 				// Splitting React into a different bundle
@@ -92,6 +99,20 @@ module.exports = {
 		},
 	},
 	plugins,
+	devServer: {
+		port: 1358,
+		open: true,
+		hot: true,
+		historyApiFallback: true,
+		static: {
+			directory: path.resolve(__dirname, 'dist/app'),
+			publicPath: '/',
+			watch: true,
+		},
+		devMiddleware: {
+			writeToDisk: true,
+		},
+	},
 	module: {
 		rules: [
 			{
@@ -112,7 +133,7 @@ module.exports = {
 			},
 			{
 				test: /\.(gif|png|jpe?g|svg|woff|woff2|ttf|eot)$/i,
-				use: ['file-loader'],
+				type: 'asset/resource',
 			},
 		],
 	},

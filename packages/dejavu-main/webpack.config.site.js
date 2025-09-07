@@ -1,28 +1,35 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const { NODE_ENV } = process.env;
 
-const plugins = [
-	// Ignore all locale files of moment.js
-	new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-	new CleanWebpackPlugin([path.resolve(__dirname, 'dist/site')]),
-	new HtmlWebpackPlugin({
-		template: './site/index.html',
-		alwaysWriteToDisk: true,
-	}),
-	new FaviconsWebpackPlugin({
-		logo: './site/src/favicon/favicon.png',
-		prefix: 'favicon/',
-	}),
-	new HtmlWebpackHarddiskPlugin(),
-	new CopyWebpackPlugin(['./site/src/_redirects']),
-];
+const plugins = (() => {
+	const list = [
+		// Ignore all locale files of moment.js (Webpack 5 options signature)
+		new webpack.IgnorePlugin({
+			resourceRegExp: /^\.\/locale$/,
+			contextRegExp: /moment$/,
+		}),
+		new HtmlWebpackPlugin({
+			template: './site/index.html',
+		}),
+		new CopyWebpackPlugin({
+			patterns: [{ from: './site/src/_redirects', to: '.' }],
+		}),
+	];
+	if (process.env.DISABLE_FAVICONS !== '1') {
+		list.push(
+			new FaviconsWebpackPlugin({
+				logo: './site/src/favicon/favicon.png',
+				prefix: 'favicon/',
+			}),
+		);
+	}
+	return list;
+})();
 
 const isDevelopment = NODE_ENV === 'development';
 
@@ -31,14 +38,25 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, 'dist/site'),
 		publicPath: '/',
-		filename: isDevelopment ? '[name].js' : '[name].[chunkhash:8].js',
+		clean: true,
+		filename: isDevelopment ? '[name].js' : '[name].[contenthash:8].js',
 	},
 	optimization: {
-		splitChunks: {
-			chunks: 'initial',
-		},
+		splitChunks: { chunks: 'all' },
 	},
 	plugins,
+	devServer: {
+		port: 1359,
+		open: true,
+		hot: true,
+		historyApiFallback: true,
+		static: {
+			directory: path.resolve(__dirname, 'dist/site'),
+			publicPath: '/',
+			watch: true,
+		},
+		devMiddleware: { writeToDisk: true },
+	},
 	module: {
 		rules: [
 			{
@@ -50,19 +68,11 @@ module.exports = {
 			},
 			{
 				test: /\.css$/,
-				use: [
-					{
-						loader: 'style-loader',
-						options: {
-							insertAt: 'top',
-						},
-					},
-					'css-loader',
-				],
+				use: ['style-loader', 'css-loader'],
 			},
 			{
 				test: /\.(gif|png|jpe?g|svg)$/i,
-				use: ['file-loader'],
+				type: 'asset/resource',
 			},
 		],
 	},
