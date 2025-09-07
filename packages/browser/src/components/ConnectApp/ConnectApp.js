@@ -252,12 +252,17 @@ class ConnectApp extends Component<Props, State> {
 	validateUrl = e => {
 		const { value, name } = e.target;
 
-		if (value && value.trim() && !value.startsWith('http') && !value.startsWith('https')) {
+		if (
+			value &&
+			value.trim() &&
+			!value.startsWith('http') &&
+			!value.startsWith('https')
+		) {
 			this.setState({
 				[name]: `http://${value}`,
 			});
 		}
-	}
+	};
 
 	handleAppNameChange = appname => {
 		this.setState({ missingAppName: false });
@@ -551,7 +556,7 @@ class ConnectApp extends Component<Props, State> {
 									spellcheck="false"
 									autocorrect="off"
 									autocapitalize="off"
-									status={missingAppName ? "error" : ""}
+									status={missingAppName ? 'error' : ''}
 								/>
 							</Item>
 

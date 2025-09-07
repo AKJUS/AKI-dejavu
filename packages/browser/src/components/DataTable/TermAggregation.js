@@ -55,7 +55,7 @@ class TermAggregation extends React.Component<Props, State> {
 		}
 
 		return (
-            <Popover
+			<Popover
 				content={
 					hasMounted && (
 						<MultiList
@@ -97,10 +97,11 @@ class TermAggregation extends React.Component<Props, State> {
 					<Flex justifyContent="space-between" alignItems="center">
 						<span>Filter</span>
 						<SyncOutlined
-                            css={css`
+							css={css`
 								cursor: pointer;
 							`}
-                            onClick={this.onUpdate} />
+							onClick={this.onUpdate}
+						/>
 					</Flex>
 				}
 				trigger="click"
@@ -108,7 +109,7 @@ class TermAggregation extends React.Component<Props, State> {
 			>
 				<FontAwesomeIcon icon={faFilter} className={filterIconStyles} />
 			</Popover>
-        );
+		);
 	}
 }
 

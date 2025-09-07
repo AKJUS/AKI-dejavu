@@ -34,7 +34,7 @@ class ErrorMessage extends Component<Props, State> {
 		const { isShowingDetails } = this.state;
 		const { description, handleReload } = this.props;
 		return (
-            <Fragment>
+			<Fragment>
 				<Button
 					size="small"
 					type="primary"
@@ -58,7 +58,7 @@ class ErrorMessage extends Component<Props, State> {
 					/>
 				)}
 			</Fragment>
-        );
+		);
 	}
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { CrossStorageHub } from 'cross-storage';
 
 import App from './App';
@@ -11,4 +11,6 @@ CrossStorageHub.init([
 	{ origin: /localhost:1358$/, allow: ['get'] },
 ]);
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App />);
