@@ -38,7 +38,8 @@ const Navigation = ({ indexes, isConnected, history }: Props) => {
 	const navHandler = key => {
 		switch (key) {
 			case 'import':
-				window.open('https://importer.reactivesearch.io/', '_blank');
+				setSelectedKey('import');
+				history.push('/import');
 				break;
 			case 'browse':
 				setSelectedKey('browse');
@@ -78,7 +79,7 @@ const Navigation = ({ indexes, isConnected, history }: Props) => {
 			)}
 			<Item key="import">
 				<UploadOutlined />
-				<span>Import Data ↗️</span>
+				<span>Import Data</span>
 			</Item>
 		</Menu>
 	);

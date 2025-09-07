@@ -20,7 +20,7 @@ import logo from './images/dejavu-logo.svg';
 
 const SearchPreview = lazy(() => import('./components/SearchPreview'));
 const DataBrowser = lazy(() => import('@appbaseio/dejavu-browser'));
-const QueryExplorer = lazy(() => import('./components/QueryExplorer'));
+const Importer = lazy(() => import('./components/Importer'));
 
 const { getUrlParams, getLocalStorageItem, setLocalStorageData } = utils;
 const { LOCAL_CONNECTIONS } = constants;
@@ -98,10 +98,6 @@ class App extends Component {
 				return withSuspense(SearchPreview);
 			}
 
-			if (route === 'query') {
-				return withSuspense(QueryExplorer);
-			}
-
 			return withSuspense(DataBrowser);
 		}
 
@@ -172,12 +168,9 @@ class App extends Component {
 											}
 										/>
 										<Route
-											path="/query"
+											path="/import"
 											render={props =>
-												withSuspense(
-													QueryExplorer,
-													props,
-												)
+												withSuspense(Importer, props)
 											}
 										/>
 										<Route
