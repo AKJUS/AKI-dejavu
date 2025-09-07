@@ -50,7 +50,7 @@ jobs:
         fi
 
     - name: Build Dejavu App
-      run: yarn build:dejavu:app
+      run: DISABLE_FAVICONS=1 yarn build:dejavu:app
 
     - name: Zip the dist folder
       run: |
